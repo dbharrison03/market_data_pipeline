@@ -1,0 +1,24 @@
+[project]
+name = "market-data-pipeline"
+version = "0.1.0"
+description = "ETL pipeline for daily market data — fetches, caches and stores OHLCV data in SQLite"
+requires-python = ">=3.13"
+dependencies = [
+    "yfinance>=0.2.40",
+    "pandas>=2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+market-data-pipeline = "market_data_pipeline.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
