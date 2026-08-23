@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# --- Project-specific ---
+
+# PyCharm
+.idea/
+
+# Local data and databases
+data/
+*.db
+*.sqlite
+*.sqlite3
