@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 
 def init_db(db_path):
-    """Create the database file and prices table if they don't exist.
+    """Create the database file and market data table if they don't exist.
 
     Args:
         db_path: Path to the SQLite database file.
@@ -34,3 +34,4 @@ def get_latest_date(ticker, db_path):
     row = cursor.fetchone()
     conn.close()
     return row[0]
+
