@@ -39,21 +39,21 @@ def get_latest_date(ticker, db_path):
 def save_prices(df, ticker , db_path):
     """Upsert one ticker's daily prices into the market_data table.
 
-        Rows whose (ticker, date) already exist are overwritten with the new
-        values. The whole batch is saved atomically: all rows or none.
+    Rows whose (ticker, date) already exist are overwritten with the new
+    values. The whole batch is saved atomically: all rows or none.
 
-        Precondition: df holds prices for a single ticker, has no ticker
-        column, and has columns date (str, 'YYYY-MM-DD'), open, high, low,
-        close, volume.
+    Precondition: df holds prices for a single ticker, has no ticker
+    column, and has columns date (str, 'YYYY-MM-DD'), open, high, low,
+    close, volume.
 
-        Args:
-            df: DataFrame of daily prices for one ticker.
-            ticker: Symbol to store the rows under, e.g. 'AAPL'.
-            db_path: Path to the SQLite database file.
+    Args:
+        df: DataFrame of daily prices for one ticker.
+        ticker: Symbol to store the rows under, e.g. 'AAPL'.
+        db_path: Path to the SQLite database file.
 
-        Returns:
-            Number of rows written.
-        """
+    Returns:
+        Number of rows written.
+    """
 
     ordered = df[['date', 'open','high','low','close','volume' ]]
 
@@ -80,5 +80,32 @@ def save_prices(df, ticker , db_path):
 
     return len(rows)
 
+def load_prices(ticker, db_path, start='0000-01-01', end='9999-12-31'):
+    """Load one ticker's daily prices from the market_data table.
 
+    Both start and end are inclusive. Rows are returned oldest first.
+
+    Args:
+        ticker: Asset ID to load e.g. 'AAPL'.
+        db_path: Path to the SQLite database file.
+        start: earliest date to include (str, 'YYYY-MM-DD'), defaults to no lower limit.
+        end: latest date to include (str, 'YYYY-MM-DD'), defaults to no upper limit.
+
+    Returns:
+        DataFrame with columns date, open, high, low, close, volume. Empty if nothing matches.
+    """
+
+    sql = """SELECT date, open, high, low, close, volume
+             FROM market_data 
+             WHERE ticker = ? AND date BETWEEN ? AND ?
+             ORDER BY date"""
+
+    conn = sqlite3.connect(db_path)
+
+    try:
+        df = pd.read_sql_query(sql, conn, params=(ticker, start, end))
+    finally:
+        conn.close()
+
+    return df
 
